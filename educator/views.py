@@ -19,6 +19,13 @@ import random
 from django.utils import timezone
 import datetime
 
+# Funtion to send mail with provided subject, content and reciever
+def mail(to_email, subject, html_content, text_content):
+    from_email = EMAIL_HOST_USER
+    msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
+
 # a seperate function so that it can be called from anywhere
 def otp(to_email):
     # generating 4-digit OTP
@@ -32,13 +39,10 @@ def otp(to_email):
     print(otp)
     OTP.objects.filter(otpEmail__iexact = to_email).delete()
 
-    from_email = EMAIL_HOST_USER
     subject = 'OTP for Sign-Up'
     text_content = f'Your One Time Password for signing up on EduTech is {otp}.\nValid for only 3 minutes.\nDO NOT SHARE IT WITH ANYBODY.'
     html_content = f'<span style="font-family: Arial, Helvetica, sans-serif; font-size: 16px;"><p style="font-size: 18px;">DO NOT SHARE IT WITH ANYBODY.</p><p>Valid for only 5 minutes.</p><p>Your One Time Password for signing up on EduTech is <strong style="font-size: 18px;">{otp}</strong>.</p></span>'
-    msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
-    msg.attach_alternative(html_content, "text/html")
-    msg.send()
+    mail(to_email, subject, html_content, text_content)
 
     OTP.objects.create(otp = otp, otpEmail = to_email, time_created = timezone.now())
     return Response({'message': 'OTP sent successfully'}, status=status.HTTP_201_CREATED)
@@ -51,6 +55,7 @@ def send_otp(request):
 # Sign Up After OTP Verification
 class AccountCreateView(APIView):
     permission_classes = [AllowAny]
+
     def post(self, request, format = None):
         try:
             user_email = request.data.get('email',)
@@ -81,13 +86,15 @@ class AccountCreateView(APIView):
         except:
             return Response({'message': 'Please provide the required details.'}, status=status.HTTP_204_NO_CONTENT)
 
+# OTP Verification
 class OTPView(APIView):
     permission_classes = (AllowAny,)
+
     def post(self, request, format = None):
         data_otp = request.data.get("otp",)
         data_email = request.data.get("email",)
         current_time = timezone.now()
-        # user will always be correct as front end retains it from previous step
+        # user email will always be correct as front end retains it from previous step
         otp_obj = OTP.objects.get(otpEmail__iexact = data_email)
         # OTP expired
         if otp_obj.time_created + datetime.timedelta(minutes=3) < current_time:
@@ -113,22 +120,14 @@ class OTPView(APIView):
 class LoginAPIView(APIView):
     permission_classes = (AllowAny,)
 
-    # serializer_class = LoginUserSerializer
-
     def post(self, request):
         email = (request.data.get("email",))
-        # email = email.lower()
         password = request.data.get("password",)
         try:
             entered_usr = Educator.objects.get(email=email)
-            if check_password(password,entered_usr.password ):
-                if not entered_usr.is_verified:
-                    message = {'message':'Email address not verified by otp. Please Verify.'}
-                    send_otp(email)
-                    return Response(message, status=status.HTTP_503_SERVICE_UNAVAILABLE)
-                else:
-                    message = {'message':'Login verified'}
-                    return Response(message, status=status.HTTP_202_ACCEPTED)
+            if check_password(password, entered_usr.password):
+                message = {'message':'Login verified'}
+                return Response(message, status=status.HTTP_202_ACCEPTED)
             else:
                 message = {'message':'Incorrect password'}
                 return Response(message, status=status.HTTP_401_UNAUTHORIZED)
