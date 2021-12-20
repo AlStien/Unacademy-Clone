@@ -10,11 +10,11 @@ from django.core.mail import EmailMultiAlternatives
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.password_validation import validate_password
 from Unacademy.settings import EMAIL_HOST_USER
-
-from .models import Educator, OTP
-
+# ------ Models -------
+from .models import Educator, OTP, EducatorDetails
+# ------ Serializers -------
 from .serializers import AccountSerializer
-
+# ------ Utitlities -------
 import random
 from django.utils import timezone
 import datetime
@@ -43,8 +43,11 @@ def otp(to_email):
     text_content = f'Your One Time Password for signing up on EduTech is {otp}.\nValid for only 3 minutes.\nDO NOT SHARE IT WITH ANYBODY.'
     html_content = f'<span style="font-family: Arial, Helvetica, sans-serif; font-size: 16px;"><p style="font-size: 18px;">DO NOT SHARE IT WITH ANYBODY.</p><p>Valid for only 5 minutes.</p><p>Your One Time Password for signing up on EduTech is <strong style="font-size: 18px;">{otp}</strong>.</p></span>'
     mail(to_email, subject, html_content, text_content)
+    exists = False
+    if Educator.objects.filter(email = to_email).exists():
+        exists = True
 
-    OTP.objects.create(otp = otp, otpEmail = to_email, time_created = timezone.now())
+    OTP.objects.create(otp = otp, otpEmail = to_email, time_created = timezone.now(), exist=exists)
     return Response({'message': 'OTP sent successfully'}, status=status.HTTP_201_CREATED)
 
 # Function Based API View to send OTP to the email provided
@@ -116,7 +119,7 @@ class OTPView(APIView):
                 message = {'message':'OTP doesn\'t match'}
                 return Response(message,status=status.HTTP_401_UNAUTHORIZED)
 
-# ------ Login -------
+# Login View
 class LoginAPIView(APIView):
     permission_classes = (AllowAny,)
 
@@ -134,3 +137,21 @@ class LoginAPIView(APIView):
         except:
             message = {'message':'No matching user found'}
             return Response(message, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+# Password Reset 
+class PasswordChangeView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        email = request.user.email
+        password = request.data.get("new password")
+        user = Educator.objects.get(email__iexact = email)
+        if user.password == password:
+            message = {'message':'Password cannot be same as old one'}
+            return Response(message, status=status.HTTP_406_NOT_ACCEPTABLE)
+        else:
+            validate_password(password)
+            user.password = make_password(password)
+            user.save()
+            message = {'message':'Password Changed Successfully'}
+            return Response(message, status=status.HTTP_202_ACCEPTED)
