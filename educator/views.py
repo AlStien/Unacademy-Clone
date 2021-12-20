@@ -1,4 +1,5 @@
 # ------ rest framework imports -------
+from django.utils.functional import empty
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -18,10 +19,6 @@ import random
 from django.utils import timezone
 import datetime
 
-@api_view(['POST'])
-def send_otp(request):
-    return otp(request.data.get('email'))
-
 # a seperate function so that it can be called from anywhere
 def otp(to_email):
     # generating 4-digit OTP
@@ -32,6 +29,7 @@ def otp(to_email):
             otp = random.randint(1000, otp)
         else:
             otp = random.randint(otp, 9999)
+    print(otp)
     OTP.objects.filter(otpEmail__iexact = to_email).delete()
 
     from_email = EMAIL_HOST_USER
@@ -45,6 +43,12 @@ def otp(to_email):
     OTP.objects.create(otp = otp, otpEmail = to_email, time_created = timezone.now())
     return Response({'message': 'OTP sent successfully'}, status=status.HTTP_201_CREATED)
 
+# Function Based API View to send OTP to the email provided
+@api_view(['POST'])
+def send_otp(request):
+    return otp(request.data.get('email'))
+
+# Sign Up After OTP Verification
 class AccountCreateView(APIView):
     permission_classes = [AllowAny]
     def post(self, request, format = None):
@@ -52,7 +56,6 @@ class AccountCreateView(APIView):
             user_email = request.data.get('email',)
             password = request.data.get('password',)
             name = request.data.get('name',)
-            # print(OTP.objects.get(otpEmail__iexact = user_email).is_verified)
             # checking if user already exists
             if Educator.objects.filter(email__iexact = user_email).exists():
                 message = {'message':'User already exists. Please Log-In'}
@@ -66,6 +69,10 @@ class AccountCreateView(APIView):
                     validate_password(password)
                     if serializer.is_valid():
                         serializer.save()
+                        user = Educator.objects.get(email = user_email)
+                        user.is_verified = True
+                        user.save()
+
                     return Response(serializer.data)
                 except:
                     return Response({'message': 'Please Enter a valid password. Password should have atleast 1 Capital Letter, 1 Number and 1 Special Character in it.'},status=status.HTTP_400_BAD_REQUEST)
@@ -101,3 +108,30 @@ class OTPView(APIView):
             else:
                 message = {'message':'OTP doesn\'t match'}
                 return Response(message,status=status.HTTP_401_UNAUTHORIZED)
+
+# ------ Login -------
+class LoginAPIView(APIView):
+    permission_classes = (AllowAny,)
+
+    # serializer_class = LoginUserSerializer
+
+    def post(self, request):
+        email = (request.data.get("email",))
+        # email = email.lower()
+        password = request.data.get("password",)
+        try:
+            entered_usr = Educator.objects.get(email=email)
+            if check_password(password,entered_usr.password ):
+                if not entered_usr.is_verified:
+                    message = {'message':'Email address not verified by otp. Please Verify.'}
+                    send_otp(email)
+                    return Response(message, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+                else:
+                    message = {'message':'Login verified'}
+                    return Response(message, status=status.HTTP_202_ACCEPTED)
+            else:
+                message = {'message':'Incorrect password'}
+                return Response(message, status=status.HTTP_401_UNAUTHORIZED)
+        except:
+            message = {'message':'No matching user found'}
+            return Response(message, status=status.HTTP_406_NOT_ACCEPTABLE)
