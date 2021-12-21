@@ -1,1 +1,3 @@
-web: gunicorn dep:app
+web: gunicorn unacademy.wsgi:application --log-file - --log-level debug
+heroku ps:scale web=1
+python manage.py migrate
