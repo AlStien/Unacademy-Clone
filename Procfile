@@ -1,5 +1,3 @@
-release: python manage.py makemigrations base --no-input
-release: python manage.py makemigrations seller_product --no-input
-release: python manage.py migrate --no-input
-
-web: gunicorn Unacademy.wsgi
+web: gunicorn djang_project_name.wsgi:application --log-file - --log-level debug
+heroku ps:scale web=1
+python manage.py migrate
