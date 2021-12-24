@@ -46,7 +46,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
-    is_educator = models.BooleanField(default=False)    # will be set true if user is educator, else false
+    is_educator = models.BooleanField(default=False)
+    is_student = models.BooleanField(default=False)
 
     # ------ Timestamp for user Created -------
     created = models.DateTimeField(auto_now_add=True)

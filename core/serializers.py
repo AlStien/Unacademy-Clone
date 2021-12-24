@@ -1,9 +1,9 @@
-from .models import Educator
+from .models import User
 from rest_framework.serializers import ModelSerializer
 
 class AccountSerializer(ModelSerializer):
     class Meta:
-        model = Educator
+        model = User
         fields = ['email', 'id', 'password', 'name']
 
     def create(self, validated_data):
