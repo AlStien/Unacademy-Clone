@@ -1,12 +1,9 @@
 from django.conf import settings
-from rest_framework import status
 import jwt
 from rest_framework.exceptions import ValidationError
-from rest_framework.response import Response
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import authentication
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
-from educator.models import Educator
+from core.models import User
 
 class JWTAuthentication(authentication.BaseAuthentication):
 
@@ -20,11 +17,11 @@ class JWTAuthentication(authentication.BaseAuthentication):
 
         try:
             payload = jwt.decode(jwt=token, key=settings.SECRET_KEY, algorithms=['HS256'])
-            user = Educator.objects.get(id=payload["user_id"])
+            user = User.objects.get(id=payload["user_id"])
             return (user, token)
             
         except jwt.ExpiredSignatureError as e:
-            raise ValidationError("Token has Expired")
+            raise ValidationError({"error": ["Token has Expired"]})
 
         except jwt.exceptions.DecodeError as e:
             raise AuthenticationFailed('Invalid Token')

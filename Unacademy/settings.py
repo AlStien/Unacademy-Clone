@@ -33,11 +33,13 @@ INSTALLED_APPS = [
 
     'corsheaders',
     'rest_framework',
+    'core',
     'educator',
+
     # oauth
-    'oauth2_provider',
-    'social_django',
-    'drf_social_oauth2',
+    # 'oauth2_provider',
+    # 'social_django',
+    # 'drf_social_oauth2',
 ]
 
 MIDDLEWARE = [
@@ -150,14 +152,16 @@ REST_FRAMEWORK = {
     ],
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
-        'drf_social_oauth2.authentication.SocialAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # oauth
+        # 'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        # 'drf_social_oauth2.authentication.SocialAuthentication',
     )
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'educator.Educator'
+AUTH_USER_MODEL = 'core.User'
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -167,28 +171,27 @@ EMAIL_USE_TLS=True
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-AUTHENTICATION_BACKENDS = (
-    # # Google OAuth2
-    # 'social_core.backends.google.GoogleOAuth2',
-    # Facebook OAuth2
-    'social_core.backends.facebook.FacebookOAuth2',
-    'social_core.backends.facebook.FacebookAppOAuth2',
-    # drf-social-oauth2
-    'drf_social_oauth2.backends.DjangoOAuth2',
+# AUTHENTICATION_BACKENDS = (
+#     # # Google OAuth2
+#     # 'social_core.backends.google.GoogleOAuth2',
+#     # Facebook OAuth2
+#     'social_core.backends.facebook.FacebookOAuth2',
+#     'social_core.backends.facebook.FacebookAppOAuth2',
+#     # drf-social-oauth2
+#     'drf_social_oauth2.backends.DjangoOAuth2',
 
-    # Django
-    'django.contrib.auth.backends.ModelBackend',
-)
+#     # Django
+#     'django.contrib.auth.backends.ModelBackend',
+# )
 
-# Facebook configuration
-SOCIAL_AUTH_FACEBOOK_KEY = str(os.getenv('SOCIAL_AUTH_FACEBOOK_KEY'))
-SOCIAL_AUTH_FACEBOOK_SECRET = str(os.getenv('SOCIAL_AUTH_FACEBOOK_SECRET'))
+# # Facebook configuration
+# SOCIAL_AUTH_FACEBOOK_KEY = str(os.getenv('SOCIAL_AUTH_FACEBOOK_KEY'))
+# SOCIAL_AUTH_FACEBOOK_SECRET = str(os.getenv('SOCIAL_AUTH_FACEBOOK_SECRET'))
 
-# Define SOCIAL_AUTH_FACEBOOK_SCOPE to get extra permissions from Facebook.
-# Email is not sent by default, to get it, you must request the email permission.
-SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
-SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
-    'fields': 'id, name, email'
-}
-# SOCIAL_AUTH_USER_FIELDS = ['email', 'password']
+# # Define SOCIAL_AUTH_FACEBOOK_SCOPE to get extra permissions from Facebook.
+# # Email is not sent by default, to get it, you must request the email permission.
+# SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+# SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+#     'fields': 'id, name, email'
+# }
 
