@@ -3,7 +3,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import  MaxValueValidator, MinValueValidator
 # core models
-from core.models import User as Educator
+from core.models import User
 
 class EducatorDetail(models.Model):
     # ------ Gender Choices -------
@@ -20,7 +20,7 @@ class EducatorDetail(models.Model):
         ('CP', 'COMPETITIVE PROGRAMMING')
     )
 
-    educator = models.OneToOneField(Educator, on_delete=models.CASCADE)
+    educator = models.OneToOneField(User, on_delete=models.CASCADE)
     mobile = models.BigIntegerField(validators=[MinValueValidator(1000000000), MaxValueValidator(9999999999)])
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     age = models.IntegerField(validators=[MinValueValidator(18), MaxValueValidator(60)], default=18)
