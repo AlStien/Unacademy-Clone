@@ -1,9 +1,21 @@
 from django.contrib import admin
 from django.urls import path, include
-from core.views import getRoutes
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 # For JWT Tokens
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+# to show all the available routes
+@api_view(['GET'])
+def getRoutes(request):
+    routes = [
+        'admin/',
+        'educator/'
+    ]
+
+    return Response(routes)
+
+# urls
 urlpatterns = [
     path('', getRoutes, name='Get Routes'),
     path('admin/', admin.site.urls),
@@ -11,6 +23,7 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view()),
     path('api/token/refresh/', TokenRefreshView.as_view()),
     # Educator App APIs
+    path('educator/', include('core.urls')),
     path('educator/', include('educator.urls')),
 
     # oauth
