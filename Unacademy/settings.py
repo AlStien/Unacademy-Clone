@@ -83,10 +83,10 @@ WSGI_APPLICATION = 'Unacademy.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'unacademy',
-        'USER': 'admin',
+        'NAME': str(os.getenv('DB_NAME')),
+        'USER': str(os.getenv('DB_USER')),
         'PASSWORD': str(os.getenv('DB_PASSWORD')),
-        'HOST': 'localhost',
+        'HOST': str(os.getenv('DB_HOST')),
         'PORT': '5432',
     }
 }
