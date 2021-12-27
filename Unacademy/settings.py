@@ -107,15 +107,15 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
-    # {
-    #     'NAME': 'Unacademy.validators.NumberValidator',
-    # },
-    # {
-    #     'NAME': 'Unacademy.validators.UppercaseValidator',
-    # },
-    # {
-    #     'NAME': 'VShop.validators.SymbolValidator',
-    # },
+    {
+        'NAME': 'Unacademy.validators.NumberValidator',
+    },
+    {
+        'NAME': 'Unacademy.validators.UppercaseValidator',
+    },
+    {
+        'NAME': 'Unacademy.validators.SymbolValidator',
+    },
 ]
 
 
