@@ -30,3 +30,6 @@ class EducatorDetail(models.Model):
     sample_video = models.FileField(upload_to='educator/sample-video', blank=True, null=True)
     # for ppts and other attachments to show with the sample video if any (optional)
     attachment = models.FileField(upload_to='educator/others', blank=True, null=True)
+
+    def __str__(self):
+        return self.educator.name

@@ -43,9 +43,6 @@ def otp(to_email):
     html_content = f'<span style="font-family: Arial, Helvetica, sans-serif; font-size: 16px;"><p style="font-size: 18px;">DO NOT SHARE IT WITH ANYBODY.</p><p>Valid for only 5 minutes.</p><p>Your One Time Password for signing up on EduTech is <strong style="font-size: 18px;">{otp}</strong>.</p></span>'
     mail(to_email, subject, html_content, text_content)
 
-    if User.objects.filter(email = to_email).exists():
-        exists = True
-
     OTP.objects.create(otp = otp, otpEmail = to_email, time_created = timezone.now())
     return Response({'message': 'OTP sent successfully'}, status=status.HTTP_201_CREATED)
 
@@ -143,16 +140,21 @@ class PasswordChangeView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        email = request.user.email
+        try:
+            email = request.data.get('email',)
+            user = User.objects.get(email__iexact = email)
+        except:
+            user = request.user
         password = request.data.get("new password")
-        user = User.objects.get(email__iexact = email)
-        if check_password(password, user.password):
-            message = {'message':'Password cannot be same as old one'}
-            return Response(message, status=status.HTTP_406_NOT_ACCEPTABLE)
-        else:
-            validate_password(password)
-            password = make_password(password)
-            user.password = password
-            user.save()
-            message = {'message':'Password Changed Successfully'}
-            return Response(message, status=status.HTTP_202_ACCEPTED)
+        if OTP.objects.get(otpEmail = email).is_verified:
+            if check_password(password, user.password):
+                message = {'message':'Password cannot be same as old one'}
+                return Response(message, status=status.HTTP_406_NOT_ACCEPTABLE)
+            else:
+                # validate_password(password)
+                password = make_password(password)
+                user.password = password
+                user.save()
+                message = {'message':'Password Changed Successfully'}
+                return Response(message, status=status.HTTP_202_ACCEPTED)
+        return Response({'message':'Please verify this email first.'}, status=status.HTTP_401_UNAUTHORIZED)
