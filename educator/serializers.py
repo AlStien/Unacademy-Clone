@@ -8,13 +8,21 @@ class UserSerializer(ModelSerializer):
         fields = ['email', 'name', 'is_educator', 'is_student']
 
 class EducatorDetailSerializer(ModelSerializer):
-    educator = UserSerializer()
     class Meta:
         model = EducatorDetail
         fields = '__all__'
+    
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['educator'] = UserSerializer(instance.educator).data
+        return response
 
 class SeriesSerializer(ModelSerializer):
-    educator = UserSerializer()
     class Meta:
         model = Series
         fields = '__all__'
+            
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['educator'] = UserSerializer(instance.educator).data
+        return response
