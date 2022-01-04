@@ -13,3 +13,8 @@ class AccountSerializer(ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
+
+class UserViewSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['email', 'name', 'is_educator', 'is_student']

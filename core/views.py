@@ -1,5 +1,5 @@
 # ------ rest framework imports -------
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -12,7 +12,7 @@ from Unacademy.settings import EMAIL_HOST_USER
 # ------ Models -------
 from .models import User, OTP
 # ------ Serializers -------
-from .serializers import AccountSerializer
+from .serializers import AccountSerializer, UserViewSerializer
 # ------ Utitlities -------
 import random
 from django.utils import timezone
@@ -42,15 +42,13 @@ def otp(to_email):
     text_content = f'Your One Time Password for signing up on EduTech is {otp}.\nValid for only 3 minutes.\nDO NOT SHARE IT WITH ANYBODY.'
     html_content = f'<span style="font-family: Arial, Helvetica, sans-serif; font-size: 16px;"><p style="font-size: 18px;">DO NOT SHARE IT WITH ANYBODY.</p><p>Valid for only 5 minutes.</p><p>Your One Time Password for signing up on EduTech is <strong style="font-size: 18px;">{otp}</strong>.</p></span>'
     mail(to_email, subject, html_content, text_content)
-    exists = False
-    if User.objects.filter(email = to_email).exists():
-        exists = True
 
-    OTP.objects.create(otp = otp, otpEmail = to_email, time_created = timezone.now(), exist=exists)
+    OTP.objects.create(otp = otp, otpEmail = to_email, time_created = timezone.now())
     return Response({'message': 'OTP sent successfully'}, status=status.HTTP_201_CREATED)
 
 # Function Based API View to send OTP to the email provided
 @api_view(['POST'])
+@permission_classes((AllowAny, ))
 def send_otp(request):
     return otp(request.data.get('email'))
 
@@ -128,8 +126,8 @@ class LoginAPIView(APIView):
         try:
             entered_usr = User.objects.get(email=email)
             if check_password(password, entered_usr.password):
-                message = {'message':'Login verified'}
-                return Response(message, status=status.HTTP_202_ACCEPTED)
+                serializer = UserViewSerializer(instance=entered_usr)
+                return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
             else:
                 message = {'message':'Incorrect password'}
                 return Response(message, status=status.HTTP_401_UNAUTHORIZED)
@@ -142,15 +140,21 @@ class PasswordChangeView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        email = request.user.email
+        try:
+            email = request.data.get('email',)
+            user = User.objects.get(email__iexact = email)
+        except:
+            user = request.user
         password = request.data.get("new password")
-        user = User.objects.get(email__iexact = email)
-        if user.password == password:
-            message = {'message':'Password cannot be same as old one'}
-            return Response(message, status=status.HTTP_406_NOT_ACCEPTABLE)
-        else:
-            validate_password(password)
-            user.password = make_password(password)
-            user.save()
-            message = {'message':'Password Changed Successfully'}
-            return Response(message, status=status.HTTP_202_ACCEPTED)
+        if OTP.objects.get(otpEmail = email).is_verified:
+            if check_password(password, user.password):
+                message = {'message':'Password cannot be same as old one'}
+                return Response(message, status=status.HTTP_406_NOT_ACCEPTABLE)
+            else:
+                # validate_password(password)
+                password = make_password(password)
+                user.password = password
+                user.save()
+                message = {'message':'Password Changed Successfully'}
+                return Response(message, status=status.HTTP_202_ACCEPTED)
+        return Response({'message':'Please verify this email first.'}, status=status.HTTP_401_UNAUTHORIZED)

@@ -23,7 +23,7 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view()),
     path('api/token/refresh/', TokenRefreshView.as_view()),
     # Educator App APIs
-    path('educator/', include('core.urls')),
+    path('user/', include('core.urls')),
     path('educator/', include('educator.urls')),
 
     # oauth
