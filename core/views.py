@@ -12,7 +12,7 @@ from Unacademy.settings import EMAIL_HOST_USER
 # ------ Models -------
 from .models import User, OTP
 # ------ Serializers -------
-from .serializers import AccountSerializer
+from .serializers import AccountSerializer, UserViewSerializer
 # ------ Utitlities -------
 import random
 from django.utils import timezone
@@ -126,8 +126,8 @@ class LoginAPIView(APIView):
         try:
             entered_usr = User.objects.get(email=email)
             if check_password(password, entered_usr.password):
-                message = {'message':'Login verified'}
-                return Response(message, status=status.HTTP_202_ACCEPTED)
+                serializer = UserViewSerializer(instance=entered_usr)
+                return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
             else:
                 message = {'message':'Incorrect password'}
                 return Response(message, status=status.HTTP_401_UNAUTHORIZED)
