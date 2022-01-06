@@ -27,7 +27,7 @@ class EducatorDetail(models.Model):
     picture = models.ImageField(upload_to = 'educator/images')
     course = models.CharField(max_length=5, choices=COURSE_CHOICES)
     bio = models.TextField(blank=True)        # all the credentials and experieces to be mentioned in bio
-    sample_video = models.FileField(upload_to='educator/sample-video', blank=True, null=True)
+    sample_video = models.URLField(blank=True, null=True)
     # for ppts and other attachments to show with the sample video if any (optional)
     attachment = models.FileField(upload_to='educator/others', blank=True, null=True)
 
@@ -47,7 +47,7 @@ class Series(models.Model):
 class Lecture(models.Model):
     series = models.ForeignKey(Series, on_delete=models.CASCADE, related_name='series_name')
     name = models.CharField(max_length=200)
-    video = models.FileField(upload_to = 'educator/lectures')
+    video = models.URLField()
 
     def __str__(self):
         return self.name
