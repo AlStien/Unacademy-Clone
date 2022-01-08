@@ -16,7 +16,13 @@ class EducatorCreateView(APIView):
     def post(self, request):
         data = request.data
         user = request.user
+        _mutable = data._mutable
+        # set to mutable
+        data._mutable = True
+        # сhange the values
         data["educator"] = user.id
+        # set mutable flag back
+        data._mutable = _mutable        
         serializer = EducatorDetailSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
