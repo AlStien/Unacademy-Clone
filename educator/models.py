@@ -29,7 +29,7 @@ class EducatorDetail(models.Model):
     bio = models.TextField(blank=True)        # all the credentials and experieces to be mentioned in bio
     sample_video = models.CharField(blank=True, null=True)
     # for ppts and other attachments to show with the sample video if any (optional)
-    attachment = models.CharField(upload_to='educator/others', blank=True, null=True)
+    attachment = models.CharField(blank=True, null=True)
 
     def __str__(self):
         return self.educator.name
