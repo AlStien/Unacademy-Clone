@@ -6,27 +6,15 @@ from django.core.validators import  MaxValueValidator, MinValueValidator
 from core.models import User
 
 class EducatorDetail(models.Model):
-    # ------ Gender Choices -------
-    GENDER_CHOICES = (
-        ('M', 'Male'),
-        ('F', 'Female'),
-        ('O', 'Others')
-    )
-
-    # ------ Course Choices -------
-    COURSE_CHOICES = (
-        ('J', 'IIT-JEE'),
-        ('U', 'UPSC'),
-        ('CP', 'COMPETITIVE PROGRAMMING')
-    )
 
     educator = models.OneToOneField(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=250, null=True)
     mobile = models.BigIntegerField(validators=[MinValueValidator(1000000000), MaxValueValidator(9999999999)])
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
-    age = models.IntegerField(validators=[MinValueValidator(18), MaxValueValidator(60)], default=18)
+    gender = models.CharField(max_length=20)
+    birth = models.DateField(default='2004-01-01')
     picture = models.CharField(max_length=250)
-    course = models.CharField(max_length=5, choices=COURSE_CHOICES)
-    bio = models.TextField(blank=True)        # all the credentials and experieces to be mentioned in bio
+    qual = models.TextField(null=True)       # all the credentials
+    bio = models.TextField(blank=True, null=True)        # experieces to be mentioned in bio
     sample_video = models.CharField(max_length=250, blank=True, null=True)
     # for ppts and other attachments to show with the sample video if any (optional)
     attachment = models.CharField(max_length=250, blank=True, null=True)

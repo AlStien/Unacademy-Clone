@@ -20,6 +20,8 @@ class EducatorCreateView(APIView):
         # set to mutable
         data._mutable = True
         # сhange the values
+        if data.get('name') is None:
+            data['name'] = user.name
         data["educator"] = user.id
         # set mutable flag back
         data._mutable = _mutable        
@@ -27,7 +29,9 @@ class EducatorCreateView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             user.is_educator = True
+            user.name = data.get('name')
             user.save()
+        serializer = EducatorDetailSerializer(instance = EducatorDetail.objects.get(educator = request.user))
         return Response(serializer.data)
     
     def put(self, request):
