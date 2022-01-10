@@ -13,18 +13,20 @@ class EducatorCreateView(APIView):
         serializer = EducatorDetailSerializer(instance = EducatorDetail.objects.get(educator = request.user))
         return Response(serializer.data)
 
-    def post(self, request):
+    def post(self, request, format=None):
         data = request.data
         user = request.user
-        _mutable = data._mutable
-        # set to mutable
-        data._mutable = True
-        # сhange the values
+    # mutable data for when data is being passed as form-data
+        # _mutable = data._mutable
+        # # set to mutable
+        # data._mutable = True
+        # # сhange the values
         if data.get('name') is None:
             data['name'] = user.name
         data["educator"] = user.id
-        # set mutable flag back
-        data._mutable = _mutable        
+        # # set mutable flag back
+        # data._mutable = _mutable
+
         serializer = EducatorDetailSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
