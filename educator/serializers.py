@@ -1,4 +1,4 @@
-from .models import EducatorDetail, Lecture, Series
+from .models import EducatorDetail, Lecture, Series, Story
 from core.models import User
 from rest_framework.serializers import ModelSerializer
 
@@ -40,3 +40,8 @@ class LectureSerializer(ModelSerializer):
         response['series description']=series.description
         response['series icon']=series.icon
         return response
+
+class StorySerializer(ModelSerializer):
+    class Meta:
+        model = Story
+        fields = '__all__'

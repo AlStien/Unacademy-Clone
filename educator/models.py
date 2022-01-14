@@ -42,11 +42,19 @@ class Lecture(models.Model):
     def __str__(self):
         return self.name
 
-# ------ Tags for Products -------
+# ------ Tags for Series -------
 class Tag(models.Model):
     # a product can have many tags so many-to-one relationship
     lecture = models.ManyToManyField(Lecture, related_name="lecture_name")
     tag = models.CharField(max_length=30, unique=True)
     
+    def __str__(self):
+        return self.tag
+
+class Story(models.Model):
+    educator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='educator')
+    doc = models.CharField(max_length=250)
+    time_created = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         return self.tag

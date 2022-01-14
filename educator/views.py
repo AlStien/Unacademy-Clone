@@ -1,13 +1,16 @@
 # ------ rest framework imports -------
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import RetrieveAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView
 from rest_framework import status
 
-from .serializers import EducatorDetailSerializer, LectureSerializer, SeriesSerializer
+from .serializers import EducatorDetailSerializer, LectureSerializer, SeriesSerializer, StorySerializer
 
-from .models import EducatorDetail, Lecture, Series
+from .models import EducatorDetail, Lecture, Series, Story
 
+from django.utils import timezone
+
+# to create and educator by providing the details
 class EducatorCreateView(APIView):
 
     def get(self, request):
@@ -38,7 +41,7 @@ class EducatorCreateView(APIView):
             serializer.save()
         return Response(serializer.data)
 
-# to get the details of a series
+# to upload a series and get the list of all series belong to the user
 class SeriesView(APIView):
     
     def get(self, request):
@@ -83,6 +86,7 @@ class SeriesView(APIView):
         else:
             return Response({'message':'User not a educator'}, status=status.HTTP_401_UNAUTHORIZED)
 
+#to upload lectures to a series and get their list
 class LectureView(APIView):
 
     def get(self, request):
@@ -102,3 +106,30 @@ class LectureView(APIView):
             return Response(serializer.data)
         else:
             return Response({'message':'User not a educator'}, status=status.HTTP_401_UNAUTHORIZED)
+
+# to upload and view stories
+class StoryView(APIView):
+    
+    def get(sel, request):
+        user = request.user
+        if user.is_educator:
+            data = Story.objects.filter(educator = user.id, time_created__gte = timezone.now() - timezone.timedelta(days=1))
+            if not data:
+                return Response({'message':'No Stories available'}, status=status.HTTP_204_NO_CONTENT)
+            serializer = StorySerializer(instance=data, many=True)
+            return Response(serializer.data)
+        else:
+            return Response({'message':'User not a educator'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    def post(self, request):
+        user = request.user
+        if user.is_educator:
+            data = request.data.copy()
+            data['educator'] = user.id
+            serializer = StorySerializer(data=data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response({'message':'User not a educator'}, status=status.HTTP_401_UNAUTHORIZED)
+
