@@ -1,4 +1,4 @@
-from .models import EducatorDetail, Series
+from .models import EducatorDetail, Lecture, Series
 from core.models import User
 from rest_framework.serializers import ModelSerializer
 
@@ -24,5 +24,19 @@ class SeriesSerializer(ModelSerializer):
             
     def to_representation(self, instance):
         response = super().to_representation(instance)
-        response['educator'] = UserSerializer(instance.educator).data
+        response['educator details']=EducatorDetailSerializer(instance.educator.educatordetail).data
+        return response
+
+class LectureSerializer(ModelSerializer):
+    class Meta:
+        model = Lecture
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        series = Series.objects.get(id = instance.series.id)
+        response.pop('series')
+        response['series name']=series.name
+        response['series description']=series.description
+        response['series icon']=series.icon
         return response

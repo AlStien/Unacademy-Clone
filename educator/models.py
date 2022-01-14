@@ -25,8 +25,9 @@ class EducatorDetail(models.Model):
 # Educator first needs to create a lecture series to upload lectures
 class Series(models.Model):
     educator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='educator_name')
-    name = models.CharField(max_length=100)
-    icon = models.ImageField(upload_to='educator/others')
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(default='This Series is about ....')
+    icon = models.CharField(max_length=250)
 
     def __str__(self) -> str:
         return self.name
@@ -35,7 +36,8 @@ class Series(models.Model):
 class Lecture(models.Model):
     series = models.ForeignKey(Series, on_delete=models.CASCADE, related_name='series_name')
     name = models.CharField(max_length=200)
-    video = models.URLField()
+    video = models.CharField(max_length=250)
+    description = models.TextField(null=True)
 
     def __str__(self):
         return self.name
