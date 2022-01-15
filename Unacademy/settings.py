@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'core',
     'educator',
+    'student',
 
     # oauth
     # 'oauth2_provider',
@@ -161,7 +162,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=500),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
