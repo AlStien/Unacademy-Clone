@@ -12,12 +12,12 @@ class EducatorDetail(models.Model):
     mobile = models.BigIntegerField(validators=[MinValueValidator(1000000000), MaxValueValidator(9999999999)])
     gender = models.CharField(max_length=20)
     birth = models.DateField(default='2004-01-01')
-    picture = models.CharField(max_length=250)
+    picture = models.CharField(max_length=700)
     qual = models.TextField(null=True)       # all the credentials
     bio = models.TextField(blank=True, null=True)        # experieces to be mentioned in bio
-    sample_video = models.CharField(max_length=250, blank=True, null=True)
+    sample_video = models.CharField(max_length=700, blank=True, null=True)
     # for ppts and other attachments to show with the sample video if any (optional)
-    attachment = models.CharField(max_length=250, blank=True, null=True)
+    attachment = models.CharField(max_length=700, blank=True, null=True)
 
     def __str__(self):
         return self.educator.name
@@ -27,7 +27,7 @@ class Series(models.Model):
     educator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='educator_name')
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(default='This Series is about ....')
-    icon = models.CharField(max_length=250)
+    icon = models.CharField(max_length=700)
 
     def __str__(self) -> str:
         return self.name
@@ -36,7 +36,7 @@ class Series(models.Model):
 class Lecture(models.Model):
     series = models.ForeignKey(Series, on_delete=models.CASCADE, related_name='series_name')
     name = models.CharField(max_length=200)
-    video = models.CharField(max_length=250)
+    video = models.CharField(max_length=700)
     description = models.TextField(null=True)
 
     def __str__(self):
@@ -53,7 +53,7 @@ class Tag(models.Model):
 
 class Story(models.Model):
     educator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='educator')
-    doc = models.CharField(max_length=250)
+    doc = models.CharField(max_length=700)
     time_created = models.DateTimeField(auto_now=True)
 
     def __str__(self):
