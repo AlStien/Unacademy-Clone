@@ -26,6 +26,7 @@ urlpatterns = [
     path('user/', include('core.urls')),
     path('educator/', include('educator.urls')),
 
+    path('student/', include('student.urls')),
     # oauth
     # path('auth/', include('drf_social_oauth2.urls', namespace='drf'))
 ]

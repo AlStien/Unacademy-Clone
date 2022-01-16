@@ -1,11 +1,8 @@
 from .models import EducatorDetail, Lecture, Series, Story
 from core.models import User
+from core.serializers import UserViewSerializer as UserSerializer
 from rest_framework.serializers import ModelSerializer
 
-class UserSerializer(ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['email', 'name', 'is_educator', 'is_student']
 
 class EducatorDetailSerializer(ModelSerializer):
     class Meta:
