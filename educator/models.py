@@ -15,7 +15,6 @@ class EducatorDetail(models.Model):
     picture = models.CharField(max_length=700)
     qual = models.TextField(null=True)       # all the credentials
     bio = models.TextField(blank=True, null=True)        # experieces to be mentioned in bio
-    address = models.TextField(blank=True, null=True)
     sample_video = models.CharField(max_length=700, blank=True, null=True)
     # for ppts and other attachments to show with the sample video if any (optional)
     attachment = models.CharField(max_length=700, blank=True, null=True)
