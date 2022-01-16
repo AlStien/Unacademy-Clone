@@ -5,6 +5,8 @@ from django.core.validators import  MaxValueValidator, MinValueValidator
 # core models
 from core.models import User
 
+from educator.models import Series
+
 class StudentDetail(models.Model):
 
     student = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student')
@@ -15,6 +17,8 @@ class StudentDetail(models.Model):
     standard = models.CharField(max_length=20)       # all the credentials
     mobile = models.BigIntegerField(validators=[MinValueValidator(1000000000), MaxValueValidator(9999999999)], blank=True, null=True)
     bio = models.TextField(null=True, blank=True)
+
+    wishlist = models.ManyToManyField(Series, related_name='wishlist', blank=True)
 
     def __str__(self):
         return self.student.name
