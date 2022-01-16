@@ -44,7 +44,7 @@ class SeriesView(generics.ListAPIView):
     queryset = Series.objects.all()
     serializer_class = SeriesSerializer
 
-# To view LEctures List of a series
+# To view Lectures List of a series
 class LectureView(generics.ListAPIView):
     serializer_class = LectureSerializer
 
