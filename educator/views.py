@@ -1,7 +1,7 @@
 # ------ rest framework imports -------
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListCreateAPIView
+from rest_framework import generics
 from rest_framework import status
 
 from .serializers import EducatorDetailSerializer, LectureSerializer, SeriesSerializer, StorySerializer
@@ -87,19 +87,21 @@ class SeriesView(APIView):
             return Response({'message':'User not a educator'}, status=status.HTTP_401_UNAUTHORIZED)
 
 #to upload lectures to a series and get their list
-class LectureView(APIView):
+class LectureView(generics.ListCreateAPIView):
+    queryset = Lecture.objects.all()
+    serializer_class = LectureSerializer
 
-    def get(self, request):
-        user = request.user
-        data = (request.data).copy()
-        lectures = Lecture.objects.filter(series = data.get('series'))
-        serializer = LectureSerializer(instance = lectures, many = True)
+    def get(self, request, pk):
+        qs = Lecture.objects.filter(series=pk)
+        print(qs)
+        serializer = LectureSerializer(instance=qs, many=True)
         return Response(serializer.data)
-    
-    def post(self, request):
+
+    def post(self, request, pk):
         user = request.user
         if user.is_educator:
             data = (request.data).copy()
+            data['series'] = pk
             serializer = LectureSerializer(data = data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
