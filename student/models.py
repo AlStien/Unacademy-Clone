@@ -5,7 +5,7 @@ from django.core.validators import  MaxValueValidator, MinValueValidator
 # core models
 from core.models import User
 
-from educator.models import Series
+from educator.models import Series, EducatorDetail
 
 class StudentDetail(models.Model):
 
@@ -19,6 +19,7 @@ class StudentDetail(models.Model):
     bio = models.TextField(null=True, blank=True)
 
     wishlist = models.ManyToManyField(Series, related_name='wishlist', blank=True)
+    following = models.ManyToManyField(EducatorDetail, related_name='educator_followers', blank=True)
 
     def __str__(self):
         return self.student.name

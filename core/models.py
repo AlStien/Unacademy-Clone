@@ -71,3 +71,14 @@ class OTP(models.Model):
 
     def __str__(self):
         return f'{self.otpEmail}: {self.otp}'
+
+class Notification(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notify_sender')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notify_reciever')
+    subject = models.CharField(max_length=300)
+    message = models.TextField()
+    date = models.DateTimeField(auto_now_add=True)
+    is_seen = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.sender} ----- {self.subject}'

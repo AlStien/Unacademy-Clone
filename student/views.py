@@ -5,9 +5,10 @@ from rest_framework import generics
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 
-from .serializers import StudentSerializer
+from .serializers import NotificationSerializer, StudentSerializer
 from educator.serializers import SeriesSerializer, LectureSerializer, EducatorDetailSerializer
 
+from core.models import Notification
 from .models import StudentDetail
 from educator.models import Series, Lecture, EducatorDetail
 
@@ -57,6 +58,11 @@ class EducatorsView(generics.ListAPIView):
     serializer_class = EducatorDetailSerializer
     queryset = EducatorDetail.objects.all()
 
+# To view Educator's Profile
+class EducatorDetailsView(generics.RetrieveAPIView):
+    queryset = EducatorDetail.objects.all()
+    serializer_class = EducatorDetailSerializer
+
 # Wishlist of a student
 class WishlistView(APIView):
 
@@ -83,3 +89,14 @@ class WishlistView(APIView):
         else:
             return Response({'message': 'Series Not in Wishlist'}, status = status.HTTP_404_NOT_FOUND)
 
+class NotificationView(generics.RetrieveDestroyAPIView):
+
+    serializer_class = NotificationSerializer
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        obj = get_object_or_404(queryset, receiver=self.request.user)
+        return obj
+
+    def get_queryset(self):
+        return Notification.objects.filter(receiver=self.request.user)

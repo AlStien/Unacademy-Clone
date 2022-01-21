@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'core',
     'educator',
-    'student',
+    'student.apps.StudentConfig',
 
     # oauth
     # 'oauth2_provider',
