@@ -5,8 +5,8 @@ from rest_framework import generics
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 
-from .serializers import NotificationSerializer, StudentSerializer
-from educator.serializers import SeriesSerializer, StorySerializer, EducatorDetailSerializer, StoryUserSerializer
+from .serializers import NotificationSerializer, StudentSerializer, StoryUserSerializer
+from educator.serializers import SeriesSerializer, StorySerializer, EducatorDetailSerializer
 
 from core.models import Notification
 from .models import StudentDetail
