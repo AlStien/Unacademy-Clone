@@ -28,6 +28,7 @@ class Series(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(default='This Series is about ....')
     icon = models.CharField(max_length=700)
+    lectures = models.IntegerField(default=0)
 
     def __str__(self) -> str:
         return self.name
@@ -35,7 +36,7 @@ class Series(models.Model):
 # Model for Lectures to be uploaded in a series
 class Lecture(models.Model):
     series = models.ForeignKey(Series, on_delete=models.CASCADE, related_name='series_name')
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, unique=True)
     video = models.CharField(max_length=700)
     description = models.TextField(null=True)
 

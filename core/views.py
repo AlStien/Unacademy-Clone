@@ -140,13 +140,17 @@ class PasswordChangeView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
+        otp = False
         try:
             email = request.data.get('email',)
             user = User.objects.get(email__iexact = email)
+            if OTP.objects.get(otpEmail = email).is_verified:
+                otp = True
         except:
             user = request.user
+            otp=True
         password = request.data.get("new password")
-        if OTP.objects.get(otpEmail = email).is_verified:
+        if otp:
             if check_password(password, user.password):
                 message = {'message':'Password cannot be same as old one'}
                 return Response(message, status=status.HTTP_406_NOT_ACCEPTABLE)

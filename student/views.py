@@ -6,11 +6,11 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 
 from .serializers import NotificationSerializer, StudentSerializer
-from educator.serializers import SeriesSerializer, LectureSerializer, EducatorDetailSerializer
+from educator.serializers import SeriesSerializer, StorySerializer, EducatorDetailSerializer
 
 from core.models import Notification
 from .models import StudentDetail
-from educator.models import Series, Lecture, EducatorDetail
+from educator.models import Series, Story, EducatorDetail
 
 # To create Student Profile
 class StudentCreateView(generics.CreateAPIView):
@@ -44,14 +44,6 @@ class StudentDetailView(generics.RetrieveUpdateAPIView):
 class SeriesView(generics.ListAPIView):
     queryset = Series.objects.all()
     serializer_class = SeriesSerializer
-
-# To view Lectures List of a series
-class LectureView(generics.ListAPIView):
-    serializer_class = LectureSerializer
-
-    def get_queryset(self):
-        id = self.request.data.get('series')
-        return Lecture.objects.filter(series = id)
 
 # To view Educators List
 class EducatorsView(generics.ListAPIView):
@@ -89,6 +81,7 @@ class WishlistView(APIView):
         else:
             return Response({'message': 'Series Not in Wishlist'}, status = status.HTTP_404_NOT_FOUND)
 
+# To view Notifications
 class NotificationView(generics.RetrieveDestroyAPIView):
 
     serializer_class = NotificationSerializer
@@ -100,3 +93,8 @@ class NotificationView(generics.RetrieveDestroyAPIView):
 
     def get_queryset(self):
         return Notification.objects.filter(receiver=self.request.user)
+
+# To view Stories of educators
+class StoryView(generics.ListAPIView):
+    queryset = Story.objects.all()
+    serializer_class = StorySerializer
