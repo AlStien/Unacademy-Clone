@@ -57,4 +57,4 @@ class Story(models.Model):
     time_created = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.tag
+        return self.educator.name
