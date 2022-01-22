@@ -6,7 +6,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 
 from .serializers import NotificationSerializer, StudentSerializer
-from educator.serializers import SeriesSerializer, StorySerializer, EducatorDetailSerializer
+from educator.serializers import SeriesSerializer, StorySerializer, EducatorDetailSerializer, StoryUserSerializer
 
 from core.models import Notification
 from .models import StudentDetail
@@ -95,6 +95,14 @@ class NotificationView(generics.RetrieveDestroyAPIView):
         return Notification.objects.filter(receiver=self.request.user)
 
 # To view Stories of educators
-class StoryView(generics.ListAPIView):
+class StoryUserView(generics.ListAPIView):
     queryset = Story.objects.all()
+    serializer_class = StoryUserSerializer
+
+# To view Stories of educators
+class StoryView(generics.ListAPIView):
     serializer_class = StorySerializer
+
+    def get_queryset(self):
+        qs = Story.objects.filter(educator = self.kwargs['pk'])
+        return qs

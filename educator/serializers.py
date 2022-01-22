@@ -40,10 +40,22 @@ class LectureSerializer(ModelSerializer):
         response['series icon']=series.icon
         return response
 
-class StorySerializer(ModelSerializer):
+class StoryUserSerializer(ModelSerializer):
     class Meta:
         model = Story
         fields = '__all__'
+
+    def to_representation(self, instance):
+        qs = super().to_representation(instance)
+        response = {}
+        response['educator'] = UserSerializer(instance.educator).data['name']
+        response['picture'] = EducatorDetailSerializer(instance.educator.educatordetail).data['picture']
+        return response
+
+class StorySerializer(ModelSerializer):
+    class Meta:
+        model = Story
+        fields = ['doc']
 
     def to_representation(self, instance):
         response = super().to_representation(instance)
