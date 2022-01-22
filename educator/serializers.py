@@ -32,6 +32,8 @@ class LectureSerializer(ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
         series = Series.objects.get(id = instance.series.id)
+        series.lectures += 1
+        series.save()
         response.pop('series')
         response['series name']=series.name
         response['series description']=series.description
@@ -42,3 +44,8 @@ class StorySerializer(ModelSerializer):
     class Meta:
         model = Story
         fields = '__all__'
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['educator'] = UserSerializer(instance.educator).data
+        return response
