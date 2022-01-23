@@ -3,10 +3,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework import status
+from django.shortcuts import get_object_or_404
 
-from .serializers import EducatorDetailSerializer, LectureSerializer, SeriesSerializer, StorySerializer
+from .serializers import EducatorDetailSerializer, LectureSerializer, QuestionSerializer, QuizSerializer, SeriesSerializer, StorySerializer
 
-from .models import EducatorDetail, Lecture, Series, Story
+from .models import EducatorDetail, Lecture, Question, Quiz, Series, Story
 
 from django.utils import timezone
 
@@ -134,4 +135,48 @@ class StoryView(APIView):
             return Response(serializer.data)
         else:
             return Response({'message':'User not a educator'}, status=status.HTTP_401_UNAUTHORIZED)
+
+# to create a quiz
+class QuizView(generics.ListCreateAPIView):
+    queryset = Quiz.objects.all()
+    serializer_class = QuizSerializer
+
+    def get_queryset(self):
+        return Quiz.objects.filter(educator = self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        if user.is_educator:
+            data = request.data.copy()
+            data['educator']=user.id
+            _serializer = self.serializer_class(data=data)
+            if _serializer.is_valid():
+                _serializer.save()
+                return Response(data=_serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'message':'Title not Unique or Required details not provided'}, status=status.HTTP_400_BAD_REQUEST) 
+        return Response({'message':'User not an educator'}, status=status.HTTP_401_UNAUTHORIZED) 
+        
+# to create questions for a quiz
+class QuestionCreateView(generics.CreateAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        data = request.data.copy()
+        quiz = Quiz.objects.get(id = data.get('quiz'))
+        if quiz.educator == user:
+            _serializer = self.serializer_class(data=data)
+            if _serializer.is_valid():
+                _serializer.save()
+                return Response(data=_serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'message':'Required details not provided'}, status=status.HTTP_400_BAD_REQUEST) 
+        return Response({'message':'User Not an educator or did not create the quiz'}, status=status.HTTP_400_BAD_REQUEST) 
+
+# to view questions of a quiz
+class QuestionListView(generics.ListAPIView):
+    serializer_class = QuestionSerializer
+
+    def get_queryset(self):
+        return Question.objects.filter(quiz=self.kwargs['pk'])
 

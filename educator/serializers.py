@@ -1,4 +1,4 @@
-from .models import EducatorDetail, Lecture, Series, Story
+from .models import EducatorDetail, Lecture, Question, Quiz, Series, Story
 from core.models import User
 from core.serializers import UserViewSerializer as UserSerializer
 from rest_framework.serializers import ModelSerializer
@@ -50,3 +50,18 @@ class StorySerializer(ModelSerializer):
         response['doc'] = instance.doc
         response['educator'] = instance.educator.name
         return response
+
+class QuizSerializer(ModelSerializer):
+    class Meta:
+        model = Quiz
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['educator details']=EducatorDetailSerializer(instance.educator.educatordetail).data
+        return response
+
+class QuestionSerializer(ModelSerializer):
+    class Meta:
+        model = Question
+        fields = '__all__'

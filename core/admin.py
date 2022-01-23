@@ -2,7 +2,7 @@ from django.contrib import admin
 from . import models
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'email', 'is_verified', 'is_educator', 'is_student')
+    list_display = ('email', 'id', 'name', 'is_verified', 'is_educator', 'is_student')
 
 class OTPAdmin(admin.ModelAdmin):
     list_display = ('otpEmail', 'otp', 'time_created')

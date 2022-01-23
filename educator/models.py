@@ -59,3 +59,25 @@ class Story(models.Model):
 
     def __str__(self):
         return self.educator.name
+
+class Quiz(models.Model):
+    educator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='quiz_educator')
+    title = models.CharField(max_length=100, unique=True)
+    questions = models.IntegerField(default=0)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.title
+
+class Question(models.Model):
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='quiz')
+    question = models.TextField()
+    marks = models.IntegerField(default=4)
+    option1 = models.CharField(max_length=300)
+    option2 = models.CharField(max_length=300)
+    option3 = models.CharField(max_length=300, blank=True, null=True)
+    option4 = models.CharField(max_length=300, blank=True, null=True)
+    answer = models.IntegerField()
+
+    def __str__(self):
+        return self.question
