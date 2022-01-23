@@ -169,6 +169,8 @@ class QuestionCreateView(generics.CreateAPIView):
             _serializer = self.serializer_class(data=data)
             if _serializer.is_valid():
                 _serializer.save()
+                quiz.questions += 1
+                quiz.save()
                 return Response(data=_serializer.data, status=status.HTTP_201_CREATED)
             return Response({'message':'Required details not provided'}, status=status.HTTP_400_BAD_REQUEST) 
         return Response({'message':'User Not an educator or did not create the quiz'}, status=status.HTTP_400_BAD_REQUEST) 
