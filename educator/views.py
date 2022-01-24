@@ -103,9 +103,12 @@ class LectureView(generics.ListCreateAPIView):
         if user.is_educator:
             data = (request.data).copy()
             data['series'] = pk
+            series = Series.objects.get(id = pk)
             serializer = LectureSerializer(data = data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
+                series.lectures = series.lectures + 1
+                series.save()
             return Response(serializer.data)
         else:
             return Response({'message':'User not a educator'}, status=status.HTTP_401_UNAUTHORIZED)

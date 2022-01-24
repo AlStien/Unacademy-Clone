@@ -32,8 +32,6 @@ class LectureSerializer(ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
         series = Series.objects.get(id = instance.series.id)
-        series.lectures += 1
-        series.save()
         response.pop('series')
         response['series name']=series.name
         response['series description']=series.description
