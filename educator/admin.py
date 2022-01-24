@@ -8,7 +8,7 @@ class QuizAdmin(admin.ModelAdmin):
     list_display = ('title', 'id', 'educator')
 
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('question', 'quiz')
+    list_display = ('question', 'id', 'quiz', 'answer')
 
 # Register your models here.
 admin.site.register(models.EducatorDetail)

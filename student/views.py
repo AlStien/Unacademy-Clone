@@ -6,11 +6,11 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 
 
-from .serializers import NotificationSerializer, StudentSerializer, StoryUserSerializer
+from .serializers import AttemptSerializer, NotificationSerializer, StudentSerializer, StoryUserSerializer
 from educator.serializers import SeriesSerializer, StorySerializer, EducatorDetailSerializer, QuizSerializer
 
 from core.models import Notification
-from .models import StudentDetail
+from .models import Attempted, StudentDetail
 from educator.models import Series, Story, EducatorDetail, Quiz
 
 # To create Student Profile
@@ -111,3 +111,19 @@ class StoryView(generics.ListAPIView):
 class QuizView(generics.ListAPIView):
     queryset = Quiz.objects.all()
     serializer_class = QuizSerializer
+
+class AttemptView(generics.CreateAPIView):
+
+    queryset = Attempted.objects.all()
+    serializer_class = AttemptSerializer
+
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        data = request.data.copy()
+        data['student']=StudentDetail.objects.get(student=user).id
+        _serializer = self.serializer_class(data=data)
+        if _serializer.is_valid():
+            _serializer.save()
+            return Response(data=_serializer.data, status=status.HTTP_201_CREATED)
+        return Response({'message':'User Already Exists or Required details not provided'}, status=status.HTTP_400_BAD_REQUEST) 
+

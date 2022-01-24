@@ -5,7 +5,7 @@ from django.core.validators import  MaxValueValidator, MinValueValidator
 # core models
 from core.models import User
 
-from educator.models import Series, EducatorDetail
+from educator.models import Series, EducatorDetail, Question
 
 class StudentDetail(models.Model):
 
@@ -23,3 +23,15 @@ class StudentDetail(models.Model):
 
     def __str__(self):
         return self.student.name
+
+class Attempted(models.Model):
+    student = models.ForeignKey(StudentDetail, on_delete=models.CASCADE, related_name='student_attempted')
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='question_attempted')
+    answer = models.IntegerField()
+    is_correct = models.BooleanField(default=False, blank=True, null=True)
+
+    def __str__(self) -> str:
+        return self.question.question
+
+# class Score(models.Model):
+#     quiz = models.ForeignKey()
