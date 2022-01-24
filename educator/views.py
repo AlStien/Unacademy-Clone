@@ -4,10 +4,13 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework import status
 from django.shortcuts import get_object_or_404
+import json
 
-from .serializers import EducatorDetailSerializer, LectureSerializer, QuestionSerializer, QuizSerializer, SeriesSerializer, StorySerializer
+from .serializers import AnnouncementSerializer, EducatorDetailSerializer, LectureSerializer, QuestionSerializer, QuizSerializer, SeriesSerializer, StorySerializer
 
+from core.models import User, Notification
 from .models import EducatorDetail, Lecture, Question, Quiz, Series, Story
+from student.models import StudentDetail
 
 from django.utils import timezone
 
@@ -184,4 +187,26 @@ class QuestionListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Question.objects.filter(quiz=self.kwargs['pk'])
+
+class AnnouncementView(APIView):
+
+    def get(self, request):
+        notifications = Notification.objects.filter(sender = request.user)
+        serializer = AnnouncementSerializer(instance=notifications, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        data = request.data.copy()
+        user = request.user
+        followers = []
+        for f in StudentDetail.objects.filter(following = user.educatordetail.id):
+            f = User.objects.get(email = f.student.email)
+            followers.append(f)
+        followers = [Notification(
+            receiver = (student or None), sender = user,
+            subject = f'{data.get("subject")}',
+            message=f'{data.get("message")}'
+        ) for student in followers]
+        Notification.objects.bulk_create(followers)[0]
+        return Response({'message':'success'})
 
