@@ -4,7 +4,7 @@ from core.serializers import UserViewSerializer as UserSerializer
 from rest_framework.serializers import ModelSerializer
 from .models import Attempted, Score, StudentDetail
 from educator.models import Story
-from educator.serializers import EducatorDetailSerializer
+from educator.serializers import EducatorDetailSerializer, QuestionSerializer
 
 class StudentSerializer(ModelSerializer):
     class Meta:
@@ -50,6 +50,10 @@ class AttemptSerializer(ModelSerializer):
         response['attempted answer'] = instance.answer
         response['correct answer'] = instance.question.answer
         response.pop('answer')
+        response['question'] = QuestionSerializer(instance.question).data
+        response['question'].pop('id')
+        response['question'].pop('quiz')
+        response['question'].pop('answer')
         return response
 
 class ScoreSerializer(ModelSerializer):
