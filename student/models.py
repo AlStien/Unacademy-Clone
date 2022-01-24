@@ -2,6 +2,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import  MaxValueValidator, MinValueValidator
+from Unacademy.educator.models import Quiz
 # core models
 from core.models import User
 
@@ -34,4 +35,8 @@ class Attempted(models.Model):
         return self.question.question
 
 # class Score(models.Model):
-#     quiz = models.ForeignKey()
+#     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='score_quiz')
+#     score = models.IntegerField()
+
+#     def __str__(self) -> str:
+#         return self.quiz.name
