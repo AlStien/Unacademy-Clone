@@ -13,4 +13,5 @@ urlpatterns = [
     path('story/<int:pk>/', views.StoryView.as_view()),
     path('quiz/', views.QuizView.as_view()),
     path('quiz/question/attempt/', views.AttemptView.as_view()),
+    path('quiz/score/<int:pk>/', views.ScoreView.as_view()),
 ]

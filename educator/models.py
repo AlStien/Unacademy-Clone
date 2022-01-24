@@ -64,6 +64,7 @@ class Quiz(models.Model):
     educator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='quiz_educator')
     title = models.CharField(max_length=100, unique=True)
     questions = models.IntegerField(default=0)
+    marks = models.IntegerField(default=0)
     description = models.TextField()
 
     def __str__(self):

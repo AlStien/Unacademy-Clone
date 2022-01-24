@@ -2,7 +2,7 @@ from educator.models import Question
 from core.models import Notification
 from core.serializers import UserViewSerializer as UserSerializer
 from rest_framework.serializers import ModelSerializer
-from .models import Attempted, StudentDetail
+from .models import Attempted, Score, StudentDetail
 from educator.models import Story
 from educator.serializers import EducatorDetailSerializer
 
@@ -50,4 +50,14 @@ class AttemptSerializer(ModelSerializer):
         response['attempted answer'] = instance.answer
         response['correct answer'] = instance.question.answer
         response.pop('answer')
+        return response
+
+class ScoreSerializer(ModelSerializer):
+    class Meta:
+        model = Score
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['marks'] = instance.quiz.marks
         return response
