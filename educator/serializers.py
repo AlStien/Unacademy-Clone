@@ -1,3 +1,4 @@
+from core.models import Notification
 from .models import EducatorDetail, Lecture, Question, Quiz, Series, Story
 from core.models import User
 from core.serializers import UserViewSerializer as UserSerializer
@@ -62,4 +63,9 @@ class QuizSerializer(ModelSerializer):
 class QuestionSerializer(ModelSerializer):
     class Meta:
         model = Question
+        fields = '__all__'
+
+class AnnouncementSerializer(ModelSerializer):
+    class Meta:
+        model = Notification
         fields = '__all__'

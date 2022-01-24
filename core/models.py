@@ -74,7 +74,7 @@ class OTP(models.Model):
 
 class Notification(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notify_sender')
-    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notify_reciever')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notify_reciever', blank=True, null=True)
     subject = models.CharField(max_length=300)
     message = models.TextField()
     date = models.DateTimeField(auto_now_add=True)
