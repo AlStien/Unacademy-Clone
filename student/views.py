@@ -140,6 +140,13 @@ class AttemptView(generics.CreateAPIView):
             return Response(data=_serializer.data, status=status.HTTP_201_CREATED)
         return Response({'message':'Required details not provided'}, status=status.HTTP_400_BAD_REQUEST) 
 
+class AttemptedQuestionsView(generics.ListAPIView):
+    serializer_class = AttemptSerializer
+
+    def get_queryset(self):
+        return Attempted.objects.filter(student = StudentDetail.objects.get(student = self.request.user), 
+                        question__in = Question.objects.filter(quiz = Quiz.objects.get(id = self.kwargs['pk'])))
+
 class ScoreView(generics.ListAPIView):
 
     queryset = Score.objects.all()
