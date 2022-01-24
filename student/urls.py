@@ -11,4 +11,5 @@ urlpatterns = [
     path('notification/', views.NotificationView.as_view()),
     path('story-users/', views.StoryUserView.as_view()),
     path('story/<int:pk>/', views.StoryView.as_view()),
+    path('quiz/', views.QuizView.as_view())
 ]
