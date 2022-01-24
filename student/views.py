@@ -5,13 +5,12 @@ from rest_framework import generics
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 
-
 from .serializers import AttemptSerializer, NotificationSerializer, StudentSerializer, StoryUserSerializer
 from educator.serializers import SeriesSerializer, StorySerializer, EducatorDetailSerializer, QuizSerializer
 
 from core.models import Notification
-from .models import Attempted, StudentDetail
-from educator.models import Series, Story, EducatorDetail, Quiz
+from .models import Attempted, StudentDetail, Score
+from educator.models import Series, Story, EducatorDetail, Quiz, Question
 
 # To create Student Profile
 class StudentCreateView(generics.CreateAPIView):
@@ -120,10 +119,23 @@ class AttemptView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         user = request.user
         data = request.data.copy()
-        data['student']=StudentDetail.objects.get(student=user).id
+        student = StudentDetail.objects.get(student=user)
+        data['student']=student.id
+    
+        # to increase the score, getting the score object
+        question = Question.objects.get(id = data.get('question'))
+        quiz = Quiz.objects.get(id = question.quiz.id)
+        if Score.objects.filter(student = student.id, quiz = quiz).exists():
+            score = Score.objects.get(student = student.id, quiz = quiz)
+        else:
+            score = Score.objects.create(student = student, quiz = quiz, score = 0)
+
         _serializer = self.serializer_class(data=data)
         if _serializer.is_valid():
             _serializer.save()
+            if _serializer.data.get('is_correct'):
+                score.score += question.marks   # adding the score for the quiz
+                score.save()
+            print(_serializer.data)
             return Response(data=_serializer.data, status=status.HTTP_201_CREATED)
-        return Response({'message':'User Already Exists or Required details not provided'}, status=status.HTTP_400_BAD_REQUEST) 
-
+        return Response({'message':'Required details not provided'}, status=status.HTTP_400_BAD_REQUEST) 
