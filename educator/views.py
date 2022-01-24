@@ -176,6 +176,7 @@ class QuestionCreateView(generics.CreateAPIView):
             if _serializer.is_valid():
                 _serializer.save()
                 quiz.questions += 1
+                quiz.marks += _serializer.data.get('marks')
                 quiz.save()
                 return Response(data=_serializer.data, status=status.HTTP_201_CREATED)
             return Response({'message':'Required details not provided'}, status=status.HTTP_400_BAD_REQUEST) 

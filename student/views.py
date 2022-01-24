@@ -5,7 +5,7 @@ from rest_framework import generics
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 
-from .serializers import AttemptSerializer, NotificationSerializer, StudentSerializer, StoryUserSerializer
+from .serializers import AttemptSerializer, NotificationSerializer, ScoreSerializer, StudentSerializer, StoryUserSerializer
 from educator.serializers import SeriesSerializer, StorySerializer, EducatorDetailSerializer, QuizSerializer
 
 from core.models import Notification
@@ -139,3 +139,11 @@ class AttemptView(generics.CreateAPIView):
             print(_serializer.data)
             return Response(data=_serializer.data, status=status.HTTP_201_CREATED)
         return Response({'message':'Required details not provided'}, status=status.HTTP_400_BAD_REQUEST) 
+
+class ScoreView(generics.ListAPIView):
+
+    queryset = Score.objects.all()
+    serializer_class = ScoreSerializer
+
+    def get_queryset(self):
+        return Score.objects.filter(student = StudentDetail.objects.get(student = self.request.user).id, quiz = Quiz.objects.get(id = self.kwargs['pk']).id)
