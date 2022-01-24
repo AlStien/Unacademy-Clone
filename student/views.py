@@ -5,12 +5,13 @@ from rest_framework import generics
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 
+
 from .serializers import NotificationSerializer, StudentSerializer, StoryUserSerializer
-from educator.serializers import SeriesSerializer, StorySerializer, EducatorDetailSerializer
+from educator.serializers import SeriesSerializer, StorySerializer, EducatorDetailSerializer, QuizSerializer
 
 from core.models import Notification
 from .models import StudentDetail
-from educator.models import Series, Story, EducatorDetail
+from educator.models import Series, Story, EducatorDetail, Quiz
 
 # To create Student Profile
 class StudentCreateView(generics.CreateAPIView):
@@ -106,3 +107,7 @@ class StoryView(generics.ListAPIView):
     def get_queryset(self):
         qs = Story.objects.filter(educator = self.kwargs['pk'])
         return qs
+
+class QuizView(generics.ListAPIView):
+    queryset = Quiz.objects.all()
+    serializer_class = QuizSerializer
