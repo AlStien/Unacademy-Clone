@@ -45,6 +45,22 @@ class SeriesView(generics.ListAPIView):
     queryset = Series.objects.all()
     serializer_class = SeriesSerializer
 
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs).data.copy()
+        # series = Series.objects.get(id = response['id'])
+        # response['is_wishlisted'] = False
+        # if StudentDetail.objects.filter(student = request.user, wishlist = series).exists:
+        #     response['is_wishlisted'] = True
+        # print(response)
+        for d in response:
+            d['is_wishlisted'] = False
+            series = Series.objects.get(id = d['id'])
+            d['is_wishlisted'] = False
+            if StudentDetail.objects.filter(student = request.user, wishlist = series).exists():
+                d['is_wishlisted'] = True
+            print(response)
+        return Response(response)
+
 # To view Educators List
 class EducatorsView(generics.ListAPIView):
     serializer_class = EducatorDetailSerializer
@@ -107,10 +123,12 @@ class StoryView(generics.ListAPIView):
         qs = Story.objects.filter(educator = self.kwargs['pk'])
         return qs
 
+# To view all quizes
 class QuizView(generics.ListAPIView):
     queryset = Quiz.objects.all()
     serializer_class = QuizSerializer
 
+# To answer a question in a quiz
 class AttemptView(generics.CreateAPIView):
 
     queryset = Attempted.objects.all()
@@ -140,6 +158,7 @@ class AttemptView(generics.CreateAPIView):
             return Response(data=_serializer.data, status=status.HTTP_201_CREATED)
         return Response({'message':'Required details not provided'}, status=status.HTTP_400_BAD_REQUEST) 
 
+# Quiz's Questions analysis
 class AttemptedQuestionsView(generics.ListAPIView):
     serializer_class = AttemptSerializer
 
@@ -147,6 +166,7 @@ class AttemptedQuestionsView(generics.ListAPIView):
         return Attempted.objects.filter(student = StudentDetail.objects.get(student = self.request.user), 
                         question__in = Question.objects.filter(quiz = Quiz.objects.get(id = self.kwargs['pk'])))
 
+# Final Score of a student in a quiz
 class ScoreView(generics.ListAPIView):
 
     queryset = Score.objects.all()
