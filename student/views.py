@@ -131,7 +131,7 @@ class WishlistView(APIView):
 class NotificationView(generics.GenericAPIView, mixins.ListModelMixin, mixins.DestroyModelMixin):
 
     serializer_class = NotificationSerializer
-    pagination_class = PageNumberPagination
+    # pagination_class = PageNumberPagination
 
     def get_object(self):
         queryset = self.get_queryset()
