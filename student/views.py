@@ -66,6 +66,17 @@ class EducatorsView(generics.ListAPIView):
     serializer_class = EducatorDetailSerializer
     queryset = EducatorDetail.objects.all()
 
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs).data
+        for d in response:
+            d['is_followed'] = False
+            educator = EducatorDetail.objects.get(id = d['id'])
+            d['is_followed'] = False
+            if StudentDetail.objects.filter(student = request.user, following = educator).exists():
+                d['is_followed'] = True
+            print(response)
+        return Response(response)
+
 # To view Educator's Profile
 class EducatorDetailsView(generics.RetrieveAPIView):
     queryset = EducatorDetail.objects.all()
