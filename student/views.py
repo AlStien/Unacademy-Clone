@@ -78,6 +78,15 @@ class WishlistView(APIView):
         student = StudentDetail.objects.get(student=request.user.id)
         series = Series.objects.filter(wishlist = student)
         serializer = SeriesSerializer(series, many = True)
+        response = serializer.data
+        
+        for d in response:
+            d['is_wishlisted'] = False
+            series = Series.objects.get(id = d['id'])
+            d['is_wishlisted'] = False
+            if StudentDetail.objects.filter(student = request.user, wishlist = series).exists():
+                d['is_wishlisted'] = True
+
         return Response(serializer.data)
     
     def put(self, request, format=None):
