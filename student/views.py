@@ -42,6 +42,19 @@ class StudentDetailView(generics.RetrieveUpdateAPIView):
         obj = get_object_or_404(queryset, student=self.request.user)
         return obj
 
+    def put(self, request, *args, **kwargs):
+        student = StudentDetail.objects.get(student = request.user)
+        remove = request.data.get('remove')
+        if remove is not None:
+            student.following.remove(remove)
+            student.save()
+        following = request.data.get('following')
+        if following is not None:
+            student.following.add(following)
+            student.save()
+        serializer = StudentSerializer(instance=student)
+        return Response(serializer.data)
+
 # To view series list
 class SeriesView(generics.ListAPIView):
     queryset = Series.objects.all()
