@@ -1,9 +1,11 @@
 # ------ rest framework imports -------
+from ast import Delete
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import generics 
+from rest_framework import generics, mixins 
 from rest_framework import status
 from django.shortcuts import get_object_or_404
+from rest_framework.pagination import PageNumberPagination
 
 from .serializers import AttemptSerializer, NotificationSerializer, ScoreSerializer, StudentSerializer, StoryUserSerializer
 from educator.serializers import SeriesSerializer, StorySerializer, EducatorDetailSerializer, QuizSerializer
@@ -47,11 +49,6 @@ class SeriesView(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs).data.copy()
-        # series = Series.objects.get(id = response['id'])
-        # response['is_wishlisted'] = False
-        # if StudentDetail.objects.filter(student = request.user, wishlist = series).exists:
-        #     response['is_wishlisted'] = True
-        # print(response)
         for d in response:
             d['is_wishlisted'] = False
             series = Series.objects.get(id = d['id'])
@@ -118,17 +115,25 @@ class WishlistView(APIView):
             return Response({'message': 'Series Not in Wishlist'}, status = status.HTTP_404_NOT_FOUND)
 
 # To view Notifications
-class NotificationView(generics.RetrieveDestroyAPIView):
+class NotificationView(generics.GenericAPIView, mixins.ListModelMixin, mixins.DestroyModelMixin):
 
     serializer_class = NotificationSerializer
+    pagination_class = PageNumberPagination
 
     def get_object(self):
         queryset = self.get_queryset()
         obj = get_object_or_404(queryset, receiver=self.request.user)
+        print(obj)
         return obj
 
     def get_queryset(self):
         return Notification.objects.filter(receiver=self.request.user)
+
+    def get(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
 
 # To view Stories of educators
 class StoryUserView(generics.ListAPIView):
