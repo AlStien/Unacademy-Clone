@@ -1,5 +1,6 @@
 from core.models import Notification
 from .models import EducatorDetail, Lecture, Question, Quiz, Series, Story
+from student.models import StudentDetail
 from core.models import User
 from core.serializers import UserViewSerializer as UserSerializer
 from rest_framework.serializers import ModelSerializer
@@ -23,6 +24,7 @@ class SeriesSerializer(ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
         response['educator details']=EducatorDetailSerializer(instance.educator.educatordetail).data
+        response['educator details'].pop('id')
         return response
 
 class LectureSerializer(ModelSerializer):
