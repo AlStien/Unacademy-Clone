@@ -52,7 +52,7 @@ def otp(to_email):
 def send_otp(request):
     email = request.data.get('email')
     if User.objects.filter(email = email).exists():
-        return Response({'message':'User Already Exists'})
+        return Response({'message':'User Already Exists'}, status=status.HTTP_208_ALREADY_REPORTED)
     return otp(email)
 
 # Sign Up After OTP Verification
