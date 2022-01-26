@@ -50,7 +50,10 @@ def otp(to_email):
 @api_view(['POST'])
 @permission_classes((AllowAny, ))
 def send_otp(request):
-    return otp(request.data.get('email'))
+    email = request.data.get('email')
+    if User.objects.filter(email = email).exists():
+        return Response({'message':'User Already Exists'}, status=status.HTTP_208_ALREADY_REPORTED)
+    return otp(email)
 
 # Sign Up After OTP Verification
 class AccountCreateView(APIView):
