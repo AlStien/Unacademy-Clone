@@ -66,6 +66,7 @@ class Quiz(models.Model):
     questions = models.IntegerField(default=0)
     marks = models.IntegerField(default=0)
     description = models.TextField()
+    duration = models.IntegerField(default=90)
 
     def __str__(self):
         return self.title
