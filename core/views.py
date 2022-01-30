@@ -155,8 +155,8 @@ class PasswordChangeView(APIView):
         except:
             user = request.user
             otp=True
-            old_pass = request.data.get('old password',)
-        password = request.data.get("new password")
+            old_pass = request.data.get('old_password',)
+        password = request.data.get("new_password")
         if otp:
             if check_password(password, user.password):
                 message = {'message':'Password cannot be same as old one'}
