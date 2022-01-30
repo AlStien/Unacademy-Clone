@@ -166,6 +166,14 @@ class QuizView(generics.ListAPIView):
     queryset = Quiz.objects.all()
     serializer_class = QuizSerializer
 
+    def get(self, request, *args, **kwargs):
+        qs = super().get(request, *args, **kwargs)
+        for q in qs.data:
+            q['is_attempted'] = False
+            if Score.objects.filter(student = StudentDetail.objects.get(student = request.user), quiz = Quiz.objects.get(id = q['id'])).exists():
+                q['is_attempted'] = True
+        return qs
+
 # To answer a question in a quiz
 class AttemptView(generics.CreateAPIView):
 
