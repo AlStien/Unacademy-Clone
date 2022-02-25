@@ -14,18 +14,13 @@ class EducatorDetailSerializer(ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
         response['educator'] = UserSerializer(instance.educator).data
+        response['educator series'] = SeriesSerializer(Series.objects.filter(educator = instance.educator), many=True).data
         return response
 
 class SeriesSerializer(ModelSerializer):
     class Meta:
         model = Series
         fields = '__all__'
-            
-    def to_representation(self, instance):
-        response = super().to_representation(instance)
-        response['educator details']=EducatorDetailSerializer(instance.educator.educatordetail).data
-        response['educator details'].pop('id')
-        return response
 
 class LectureSerializer(ModelSerializer):
     class Meta:
