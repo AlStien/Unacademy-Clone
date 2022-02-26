@@ -14,8 +14,8 @@ class EducatorDetailSerializer(ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
         response['educator'] = UserSerializer(instance.educator).data
-        response['educator series'] = SeriesSerializer(Series.objects.filter(educator = instance.educator), many=True).data
-        response['educator quiz'] = QuizSerializer(Quiz.objects.filter(educator = instance.educator), many=True).data
+        response['educator_series'] = SeriesSerializer(Series.objects.filter(educator = instance.educator), many=True).data
+        response['educator_quiz'] = QuizSerializer(Quiz.objects.filter(educator = instance.educator), many=True).data
         return response
 
 class SeriesSerializer(ModelSerializer):
@@ -32,9 +32,9 @@ class LectureSerializer(ModelSerializer):
         response = super().to_representation(instance)
         series = Series.objects.get(id = instance.series.id)
         response.pop('series')
-        response['series name']=series.name
-        response['series description']=series.description
-        response['series icon']=series.icon
+        response['series_name']=series.name
+        response['series_description']=series.description
+        response['series_icon']=series.icon
         return response
 
 class StorySerializer(ModelSerializer):
