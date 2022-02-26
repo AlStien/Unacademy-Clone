@@ -16,6 +16,7 @@ class EducatorDetailSerializer(ModelSerializer):
         response['educator'] = UserSerializer(instance.educator).data
         response['educator_series'] = SeriesSerializer(Series.objects.filter(educator = instance.educator), many=True).data
         response['educator_quiz'] = QuizSerializer(Quiz.objects.filter(educator = instance.educator), many=True).data
+        response['followers'] = StudentDetail.objects.filter(following = instance.educator.educatordetail).count()
         return response
 
 class SeriesSerializer(ModelSerializer):
