@@ -18,8 +18,11 @@ from django.utils import timezone
 class EducatorCreateView(APIView):
 
     def get(self, request):
-        serializer = EducatorDetailSerializer(instance = EducatorDetail.objects.get(educator = request.user))
-        return Response(serializer.data)
+        educator = EducatorDetail.objects.get(educator = request.user)
+        serializer = EducatorDetailSerializer(instance = educator)
+        response = serializer.data
+        response['followers'] = StudentDetail.objects.filter(following = educator).count()
+        return Response(response)
 
     def post(self, request, format=None):
         data = (request.data).copy()
