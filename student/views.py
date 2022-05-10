@@ -127,7 +127,7 @@ class WishlistView(APIView):
             return Response({'message': 'Series Not in Wishlist'}, status = status.HTTP_404_NOT_FOUND)
 
 # To view Notifications
-class NotificationView(generics.GenericAPIView, mixins.ListModelMixin):
+class NotificationView(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin):
 
     serializer_class = NotificationSerializer
     # pagination_class = PageNumberPagination
@@ -142,6 +142,10 @@ class NotificationView(generics.GenericAPIView, mixins.ListModelMixin):
         return Notification.objects.filter(receiver=self.request.user, is_seen=False)
 
     def get(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        Notification.objects.filter(receiver=self.request.user, is_seen=False).update(is_seen=True)
         return super().list(request, *args, **kwargs)
 
 class ReadNotificationView(generics.UpdateAPIView):
