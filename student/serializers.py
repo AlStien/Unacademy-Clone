@@ -47,8 +47,8 @@ class AttemptSerializer(ModelSerializer):
 
     def to_representation(self, instance):
         response = super().to_representation(instance)
-        response['attempted answer'] = instance.answer
-        response['correct answer'] = instance.question.answer
+        response['attempted_answer'] = instance.answer
+        response['correct_answer'] = instance.question.answer
         response.pop('answer')
         response['question'] = QuestionSerializer(instance.question).data
         response['question'].pop('id')

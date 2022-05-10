@@ -52,7 +52,8 @@ def otp(to_email):
 def send_otp(request):
     email = request.data.get('email')
     if User.objects.filter(email = email).exists():
-        return Response({'message':'User Already Exists'}, status=status.HTTP_208_ALREADY_REPORTED)
+        otp(email)
+        return Response({'message':'OTP sent to already existing user'}, status=status.HTTP_302_FOUND)
     return otp(email)
 
 # Sign Up After OTP Verification
@@ -144,24 +145,28 @@ class PasswordChangeView(APIView):
 
     def post(self, request):
         otp = False
+        user = None
         try:
             email = request.data.get('email',)
             user = User.objects.get(email__iexact = email)
+            old_pass = user.password
             if OTP.objects.get(otpEmail = email).is_verified:
                 otp = True
         except:
             user = request.user
             otp=True
-        password = request.data.get("new password")
+            old_pass = request.data.get('old_password',)
+        password = request.data.get("new_password")
         if otp:
             if check_password(password, user.password):
                 message = {'message':'Password cannot be same as old one'}
                 return Response(message, status=status.HTTP_406_NOT_ACCEPTABLE)
-            else:
+            elif check_password(old_pass, user.password) or old_pass == user.password:
                 # validate_password(password)
                 password = make_password(password)
                 user.password = password
                 user.save()
                 message = {'message':'Password Changed Successfully'}
                 return Response(message, status=status.HTTP_202_ACCEPTED)
+            return Response({'message':'Old Password does not match'}, status=status.HTTP_401_UNAUTHORIZED)
         return Response({'message':'Please verify this email first.'}, status=status.HTTP_401_UNAUTHORIZED)

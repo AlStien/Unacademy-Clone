@@ -1,11 +1,10 @@
 # ------ rest framework imports -------
-from ast import Delete
+from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics, mixins 
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from rest_framework.pagination import PageNumberPagination
 
 from .serializers import AttemptSerializer, NotificationSerializer, ScoreSerializer, StudentSerializer, StoryUserSerializer
 from educator.serializers import SeriesSerializer, StorySerializer, EducatorDetailSerializer, QuizSerializer
@@ -150,8 +149,13 @@ class NotificationView(generics.GenericAPIView, mixins.ListModelMixin, mixins.De
 
 # To view Stories of educators
 class StoryUserView(generics.ListAPIView):
-    queryset = Story.objects.all()
     serializer_class = StoryUserSerializer
+
+    def get_queryset(self):
+        student = StudentDetail.objects.get(student=self.request.user)
+        print(student.following.all().values('educator'))
+        story=Story.objects.filter(educator__in=student.following.all().values('educator'), time_created__gte = timezone.now() - timezone.timedelta(days=1))
+        return story
 
 # To view Stories of educators
 class StoryView(generics.ListAPIView):
