@@ -189,6 +189,7 @@ class QuestionListView(generics.ListAPIView):
     def get_queryset(self):
         return Question.objects.filter(quiz=self.kwargs['pk'])
 
+# to create announcements for students
 class AnnouncementView(APIView):
 
     def get(self, request):
@@ -210,4 +211,3 @@ class AnnouncementView(APIView):
         ) for student in followers]
         Notification.objects.bulk_create(followers)[0]
         return Response({'message':'success'})
-
