@@ -127,7 +127,7 @@ class WishlistView(APIView):
             return Response({'message': 'Series Not in Wishlist'}, status = status.HTTP_404_NOT_FOUND)
 
 # To view Notifications
-class NotificationView(generics.GenericAPIView, mixins.ListModelMixin, mixins.DestroyModelMixin):
+class NotificationView(generics.GenericAPIView, mixins.ListModelMixin):
 
     serializer_class = NotificationSerializer
     # pagination_class = PageNumberPagination
@@ -139,13 +139,20 @@ class NotificationView(generics.GenericAPIView, mixins.ListModelMixin, mixins.De
         return obj
 
     def get_queryset(self):
-        return Notification.objects.filter(receiver=self.request.user)
+        return Notification.objects.filter(receiver=self.request.user, is_seen=False)
 
     def get(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
-    def delete(self, request, *args, **kwargs):
-        return super().destroy(request, *args, **kwargs)
+class ReadNotificationView(generics.UpdateAPIView):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
+
+    def update(self, request, *args, **kwargs):
+        notifi=Notification.objects.get(id=kwargs['pk'])
+        notifi.is_seen=True
+        notifi.save()
+        return super().update(request, *args, **kwargs)
 
 # To view Stories of educators
 class StoryUserView(generics.ListAPIView):

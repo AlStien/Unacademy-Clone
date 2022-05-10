@@ -8,7 +8,7 @@ class OTPAdmin(admin.ModelAdmin):
     list_display = ('otpEmail', 'otp', 'time_created')
 
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ('sender', 'receiver', 'subject', 'message')
+    list_display = ('sender', 'receiver', 'subject', 'message', 'is_seen')
 
 # Register your models here.
 admin.site.register(models.User, UserAdmin)
