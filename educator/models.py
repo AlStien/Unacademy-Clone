@@ -83,3 +83,13 @@ class Question(models.Model):
 
     def __str__(self):
         return self.question
+
+class Attachements(models.Model):
+    educator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='attachment_educator')
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField()
+    doc = models.URLField(max_length=700)
+    category = models.CharField(max_length=255)
+
+    def __str__(self) -> str:
+        return self.name
