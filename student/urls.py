@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
@@ -16,4 +16,6 @@ urlpatterns = [
     path('quiz/question/attempt/', views.AttemptView.as_view()),
     path('quiz/<int:pk>/analysis/', views.AttemptedQuestionsView.as_view()),
     path('quiz/score/<int:pk>/', views.ScoreView.as_view()),
+    path('search/profile/<str:username>/', views.ProfileSearchView.as_view()),
+    path('search/series/<str:name>/', views.SeriesSearchView.as_view()),
 ]

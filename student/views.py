@@ -6,12 +6,13 @@ from rest_framework import generics, mixins
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 
-from .serializers import AttemptSerializer, NotificationSerializer, ScoreSerializer, StudentSerializer, StoryUserSerializer
+from .serializers import AttemptSerializer, EducatorSearchSerializer, NotificationSerializer, ScoreSerializer, StudentSerializer, StoryUserSerializer
 from educator.serializers import SeriesSerializer, StorySerializer, EducatorDetailSerializer, QuizSerializer
 
 from core.models import Notification
 from .models import Attempted, StudentDetail, Score
 from educator.models import Series, Story, EducatorDetail, Quiz, Question
+from django.contrib.postgres.search import TrigramSimilarity
 
 # To create Student Profile
 class StudentCreateView(generics.CreateAPIView):
@@ -235,3 +236,25 @@ class ScoreView(generics.ListAPIView):
 
     def get_queryset(self):
         return Score.objects.filter(student = StudentDetail.objects.get(student = self.request.user).id, quiz = Quiz.objects.get(id = self.kwargs['pk']).id)
+
+class ProfileSearchView(generics.GenericAPIView, mixins.ListModelMixin):
+    model = EducatorDetail
+    serializer_class = EducatorSearchSerializer
+
+    def get_queryset(self):
+        query = self.kwargs['username']
+        return EducatorDetail.objects.annotate(similarity=TrigramSimilarity('name', query),).filter(similarity__gt=0.065).order_by('-similarity')
+    
+    def get(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+class SeriesSearchView(generics.GenericAPIView, mixins.ListModelMixin):
+    model = Series
+    serializer_class = SeriesSerializer
+
+    def get_queryset(self):
+        query = self.kwargs['name']
+        return Series.objects.annotate(similarity=TrigramSimilarity('name', query),).filter(similarity__gt=0.065).order_by('-similarity')
+    
+    def get(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
