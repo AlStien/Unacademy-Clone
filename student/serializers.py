@@ -3,7 +3,7 @@ from core.models import Notification
 from core.serializers import UserViewSerializer as UserSerializer
 from rest_framework.serializers import ModelSerializer
 from .models import Attempted, Score, StudentDetail
-from educator.models import Story
+from educator.models import Story, EducatorDetail
 from educator.serializers import EducatorDetailSerializer, QuestionSerializer
 
 class StudentSerializer(ModelSerializer):
@@ -65,3 +65,14 @@ class ScoreSerializer(ModelSerializer):
         response = super().to_representation(instance)
         response['marks'] = instance.quiz.marks
         return response
+
+class EducatorSearchSerializer(ModelSerializer):
+
+    class Meta:
+        model = EducatorDetail
+        exclude = ['sample_video', 'attachment', 'birth']
+
+#     def to_representation(self, instance):
+#         data = super(ProfileSearchSerializer, self).to_representation(instance)
+#         data['user_name'] = instance.user.name
+#         return data
