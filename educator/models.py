@@ -86,10 +86,10 @@ class Question(models.Model):
 
 class Attachements(models.Model):
     educator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='attachment_educator')
-    title = models.CharField(max_length=100, unique=True)
+    series = models.ForeignKey(Series, on_delete=models.CASCADE, related_name='attachment_series')
+    title = models.CharField(max_length=100)
     description = models.TextField()
     doc = models.URLField(max_length=700)
-    category = models.CharField(max_length=255)
 
     def __str__(self) -> str:
-        return self.name
+        return self.title

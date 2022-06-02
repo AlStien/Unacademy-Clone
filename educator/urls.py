@@ -10,5 +10,6 @@ urlpatterns = [
     path('announcement/', views.AnnouncementView.as_view()),
     path('quiz/', views.QuizView.as_view()),
     path('quiz/question/', views.QuestionCreateView.as_view()),
-    path('quiz/<int:pk>/', views.QuestionListView.as_view())
+    path('quiz/<int:pk>/', views.QuestionListView.as_view()),
+    path('attachments/<int:series>/', views.AttachmentView.as_view()),
 ]

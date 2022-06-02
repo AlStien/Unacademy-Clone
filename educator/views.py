@@ -6,10 +6,10 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 import json
 
-from .serializers import AnnouncementSerializer, EducatorDetailSerializer, LectureSerializer, QuestionSerializer, QuizSerializer, SeriesSerializer, StorySerializer
+from .serializers import AnnouncementSerializer, AttachmentSerializer, EducatorDetailSerializer, LectureSerializer, QuestionSerializer, QuizSerializer, SeriesSerializer, StorySerializer
 
 from core.models import User, Notification
-from .models import EducatorDetail, Lecture, Question, Quiz, Series, Story
+from .models import EducatorDetail, Lecture, Question, Quiz, Series, Story, Attachements
 from student.models import StudentDetail
 
 from django.utils import timezone
@@ -211,3 +211,23 @@ class AnnouncementView(APIView):
         ) for student in followers]
         Notification.objects.bulk_create(followers)[0]
         return Response({'message':'success'})
+
+class AttachmentView(generics.ListCreateAPIView):
+
+    serializer_class = AttachmentSerializer
+
+    def get_queryset(self):
+        return Attachements.objects.filter(educator=self.request.user, series=self.kwargs['series'])
+
+    def create(self, request, *args, **kwargs):
+        user=request.user
+        data=request.data.copy()
+        data['educator']=user.id
+        if Series.objects.get(id=self.kwargs['series']).educator==user:
+            data['series']=self.kwargs['series']
+            serializer=AttachmentSerializer(data=data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data)
+            return Response({'message':'invalid data'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'message':'Educator not the author of the series'}, status=status.HTTP_401_UNAUTHORIZED)
