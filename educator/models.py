@@ -89,7 +89,7 @@ class Attachements(models.Model):
     series = models.ForeignKey(Series, on_delete=models.CASCADE, related_name='attachment_series')
     title = models.CharField(max_length=100)
     description = models.TextField()
-    doc = models.URLField(max_length=700)
+    doc = models.CharField(max_length=700)
 
     def __str__(self) -> str:
         return self.title
